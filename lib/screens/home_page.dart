@@ -1,3 +1,4 @@
+import "package:drfungus_prod/screens/cases_list.dart";
 import "package:drfungus_prod/screens/datalist.dart";
 import "package:drfungus_prod/screens/test_data_screen.dart";
 import "package:flutter/material.dart";
@@ -306,7 +307,7 @@ class HomePage extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const TestDataScreen(),
+                                            const CasesListScreen(),
                                       ),
                                     );
                                   },
@@ -330,12 +331,13 @@ class HomePage extends StatelessWidget {
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          Icons.question_answer,
+                                          Icons.today,
                                           color: Color.fromRGBO(21, 40, 77, 1),
                                           size: 48,
                                         ),
                                         Text(
-                                          "Test Screen",
+                                          "Cases of the Month",
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: Color.fromRGBO(
