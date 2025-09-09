@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.drfungus_prod"
+    namespace = "com.drfungus.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
