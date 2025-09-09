@@ -1,3 +1,4 @@
+// lib/screens/datalist.dart - Your original logic + beautiful styling
 import 'package:flutter/material.dart';
 import 'package:drfungus_prod/services/firebase_service.dart';
 import 'package:drfungus_prod/screens/item_details_screen.dart';
@@ -41,6 +42,7 @@ class _DataListScreenState extends State<DataListScreen> {
   void _scrollToLetter(String letter) {
     final index = _letterIndexMap[letter];
     if (index != null) {
+      // Your original working calculation
       final offset = index * 58.0; // ListTile + SizedBox
       _scrollController.animateTo(
         offset,
@@ -50,10 +52,49 @@ class _DataListScreenState extends State<DataListScreen> {
     }
   }
 
+  // Get collection-specific styling
+  Map<String, dynamic> _getCollectionStyle() {
+    switch (widget.title) {
+      case "Fungi":
+        return {
+          'icon': Icons.hub,
+          'color': Colors.green,
+          'gradient': [Colors.green.shade50, Colors.green.shade100],
+        };
+      case "Medications":
+        return {
+          'icon': Icons.medication,
+          'color': Colors.blue,
+          'gradient': [Colors.blue.shade50, Colors.blue.shade100],
+        };
+      case "Mycoses":
+        return {
+          'icon': Icons.medical_information,
+          'color': Colors.red,
+          'gradient': [Colors.red.shade50, Colors.red.shade100],
+        };
+      case "Trials":
+      case "Active Trials":
+        return {
+          'icon': Icons.biotech,
+          'color': Colors.purple,
+          'gradient': [Colors.purple.shade50, Colors.purple.shade100],
+        };
+      default:
+        return {
+          'icon': Icons.help_outline,
+          'color': Colors.grey,
+          'gradient': [Colors.grey.shade50, Colors.grey.shade100],
+        };
+    }
+  }
+
   Widget _buildAlphabetHeader() {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    final style = _getCollectionStyle();
+
     return Container(
-      color: Colors.black,
+      color: style['color'],
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: ListView.builder(
@@ -72,7 +113,7 @@ class _DataListScreenState extends State<DataListScreen> {
               child: Text(
                 letter,
                 style: TextStyle(
-                  color: hasData ? Colors.white : Colors.grey,
+                  color: hasData ? Colors.white : Colors.white.withOpacity(0.4),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -87,14 +128,32 @@ class _DataListScreenState extends State<DataListScreen> {
   @override
   Widget build(BuildContext context) {
     final futureData = getData();
+    final style = _getCollectionStyle();
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title ?? "Data List")),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(widget.title ?? "Data List"),
+        backgroundColor: style['color'],
+        foregroundColor: Colors.white,
+      ),
       body: FutureBuilder<List<dynamic>>(
         future: futureData,
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: style['color']),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Loading ${widget.title?.toLowerCase() ?? 'data'}...",
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            );
           } else if (snapshot.hasError) {
             return const Center(child: Text("An error occurred!"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -114,25 +173,69 @@ class _DataListScreenState extends State<DataListScreen> {
                   itemCount: _sortedData.length,
                   itemBuilder: (ctx, index) {
                     final item = _sortedData[index];
+
                     return Column(
                       children: [
-                        ListTile(
-                          title: Text(item.name),
-                          tileColor: Theme.of(
-                            context,
-                          ).colorScheme.secondaryContainer,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (ctx) => ItemDetailsScreen(
-                                  name: item.name,
-                                  data: item,
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: style['gradient'],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                offset: const Offset(0, 1),
+                                blurRadius: 3,
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: style['color'].withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: style['color'].withOpacity(0.3),
+                                  width: 1.5,
                                 ),
                               ),
-                            );
-                          },
+                              child: Icon(
+                                style['icon'],
+                                color: style['color'],
+                                size: 20,
+                              ),
+                            ),
+                            title: Text(
+                              item.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade800,
+                              ),
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: style['color'],
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (ctx) => ItemDetailsScreen(
+                                    name: item.name,
+                                    data: item,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 2), // Your original spacing
                       ],
                     );
                   },
@@ -145,386 +248,3 @@ class _DataListScreenState extends State<DataListScreen> {
     );
   }
 }
-
-/* import 'package:azlistview/azlistview.dart';
-import 'package:drfungus_app/services/firebase_service.dart';
-import 'package:drfungus_app/screens/item_details_screen.dart';
-import 'package:flutter/material.dart';
-
-class DataListScreen extends StatefulWidget {
-  const DataListScreen({this.title, this.docIds, super.key});
-
-  final String? title;
-  final List<String>? docIds;
-
-  @override
-  State<DataListScreen> createState() => _DataListScreenState();
-}
-
-class _DataListScreenState extends State<DataListScreen> {
-  late Future<List<ISuspensionBean>>? futureData;
-
-  Future<List<ISuspensionBean>>? getData() {
-    if (widget.title == "Fungi") {
-      return getBugs();
-    } else if (widget.title == "Medications") {
-      return getDrugs();
-    } else if (widget.title == "Mycoses") {
-      return getMycoses();
-    } else if (widget.title == "Trials") {
-      return getTrials();
-    } else if (widget.title == "Active Trials") {
-      return getActiveTrials(widget.docIds!) as Future<List<ISuspensionBean>>;
-    }
-    return null;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    futureData = getData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title ?? "Data List"),
-      ),
-      body: FutureBuilder<List<ISuspensionBean>>(
-        future: futureData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('An error occurred!'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No data available"));
-          } else {
-            final data = snapshot.data!;
-            return AzListView(
-              data: data,
-              itemCount: data.length,
-              indexBarAlignment: Alignment.centerRight,
-              itemBuilder: (context, index) {
-                final item = data[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      tileColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      title: Text((item as dynamic).name),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => ItemDetailsScreen(
-                              name: (item as dynamic).name,
-                              data: item,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 2),
-                  ],
-                );
-              },
-              indexBarData: SuspensionUtil.getTagIndexList(data),
-              indexBarOptions: IndexBarOptions(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-                selectTextStyle: const TextStyle(
-                  color: Colors.yellow,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                selectItemDecoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black87,
-                ),
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-} */
-
-/* import 'package:flutter/material.dart';
-import 'package:drfungus_app/services/firebase_service.dart';
-import 'package:drfungus_app/screens/item_details_screen.dart';
-
-class DataListScreen extends StatefulWidget {
-  const DataListScreen({this.title, this.docIds, super.key});
-
-  final String? title;
-  final List<String>? docIds;
-
-  @override
-  State<DataListScreen> createState() => _DataListScreenState();
-}
-
-class _DataListScreenState extends State<DataListScreen> {
-  final ScrollController _scrollController = ScrollController();
-  final Map<String, int> _letterIndexMap = {};
-  List<dynamic> _sortedData = [];
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  Future<List<dynamic>>? getData() {
-    if (widget.title == "Fungi") {
-      return getBugs();
-    } else if (widget.title == "Medications") {
-      return getDrugs();
-    } else if (widget.title == "Mycoses") {
-      return getMycoses();
-    } else if (widget.title == "Trials") {
-      return getTrials();
-    } else if (widget.title == "Active Trials") {
-      return getActiveTrials(widget.docIds!);
-    }
-    return null;
-  }
-
-  void _generateIndexMap() {
-    _letterIndexMap.clear();
-    for (int i = 0; i < _sortedData.length; i++) {
-      final firstLetter = _sortedData[i].name[0].toUpperCase();
-      if (!_letterIndexMap.containsKey(firstLetter)) {
-        _letterIndexMap[firstLetter] = i;
-      }
-    }
-  }
-
-  void _scrollToLetter(String letter) {
-    final index = _letterIndexMap[letter];
-    if (index != null) {
-      _scrollController.animateTo(
-        index * 72.0, // estimated tile height
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  Widget _buildAlphabetBar() {
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    return SizedBox(
-      height: 40,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: letters.length,
-        itemBuilder: (context, index) {
-          final letter = letters[index];
-          return GestureDetector(
-            onTap: () => _scrollToLetter(letter),
-            child: Container(
-              alignment: Alignment.center,
-              width: 30,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                letter,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final futureData = getData();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title ?? "Data List"),
-      ),
-      body: FutureBuilder(
-        future: futureData,
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('An error occurred!'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No data available"));
-          } else {
-            _sortedData = List.from(snapshot.data!)
-              ..sort((a, b) => a.name.compareTo(b.name));
-            _generateIndexMap();
-
-            return Column(
-              children: [
-                _buildAlphabetBar(),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: _sortedData.length,
-                    itemBuilder: (ctx, index) {
-                      final item = _sortedData[index];
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: Text(item.name),
-                            tileColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ItemDetailsScreen(
-                                  name: item.name,
-                                  data: item,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
-          }
-        },
-      ),
-    );
-  }
-} */
-
-/* import 'package:drfungus_app/services/firebase_service.dart';
-import 'package:drfungus_app/screens/item_details_screen.dart';
-import "package:flutter/material.dart";
-
-class DataListScreen extends StatelessWidget {
-  const DataListScreen({this.title, this.docIds, super.key});
-
-  final String? title;
-  final List<String>? docIds;
-
-  @override
-  Widget build(BuildContext context) {
-    Future<List<dynamic>>? data;
-
-    if (title == "Fungi") {
-      data = getBugs();
-    } else if (title == "Medications") {
-      data = getDrugs();
-    } else if (title == "Mycoses") {
-      data = getMycoses();
-    } else if (title == "Trials") {
-      data = getTrials();
-    } else if (title == "Active Trials") {
-      data = getActiveTrials(docIds!);
-    }
-
-    Widget content = FutureBuilder(
-      future: data,
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.error != null) {
-          // Handle error
-          return const Center(child: Text('An error occurred!'));
-        } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-          // Check if the data is empty
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "No data available",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (ctx, index) {
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(snapshot.data![index].name),
-                    tileColor: Theme.of(context).colorScheme.secondaryContainer,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ctx) => ItemDetailsScreen(
-                            name: snapshot.data![index].name,
-                            data: snapshot.data![index],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 2),
-                ],
-              );
-            },
-          );
-        }
-      },
-    );
-
-    if (title == null) {
-      return content;
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title!),
-      ),
-      body: content,
-    );
-  }
-} */
-
-
-
-/*  ListView.builder(
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: ListTile(
-            tileColor: Theme.of(context).colorScheme.secondaryContainer,
-            title: Text(data[index].name),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => ItemDetailsScreen(
-                    name: data[index].name,
-                    data: data[index],
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    ); */
-
-

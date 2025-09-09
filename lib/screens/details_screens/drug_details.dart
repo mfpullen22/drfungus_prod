@@ -2,6 +2,177 @@ import "package:drfungus_prod/screens/datalist.dart";
 import "package:drfungus_prod/widgets/activetrials.dart";
 import "package:drfungus_prod/widgets/markdown_section.dart";
 import "package:flutter/material.dart";
+
+class DrugDetailsScreen extends StatelessWidget {
+  const DrugDetailsScreen({required this.data, super.key});
+
+  final dynamic data;
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade600, Colors.blue.shade700],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            offset: const Offset(0, 2),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          height: 1.2,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildContentContainer(BuildContext context, Widget child) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.withOpacity(0.2), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, 1),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildReferencesSection(BuildContext context) {
+    if (data.references.length == 0 || data.references[0] == "") {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        _buildSectionHeader(context, "References"),
+        _buildContentContainer(
+          context,
+          Column(
+            children: data.references.map<Widget>((ref) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 6, right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade600,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        ref,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade700,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Active Trials
+          if (data.trials[0] != "")
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: ActiveTrialsListTile(data: data),
+            ),
+
+          // Generic and Trade Names
+          _buildSectionHeader(context, "Generic and Trade Names"),
+          _buildContentContainer(context, MarkdownSection(data.name)),
+
+          // Mechanism of Action
+          if (data.mechanism.isNotEmpty) ...[
+            _buildSectionHeader(context, "Mechanism(s) of Action"),
+            _buildContentContainer(context, MarkdownSection(data.mechanism)),
+          ],
+
+          // Susceptibility Patterns
+          if (data.susceptibility.isNotEmpty) ...[
+            _buildSectionHeader(context, "Susceptibility Patterns"),
+            _buildContentContainer(
+              context,
+              MarkdownSection(data.susceptibility),
+            ),
+          ],
+
+          // Route and Dosage
+          if (data.dosage.isNotEmpty) ...[
+            _buildSectionHeader(context, "Route and Dosage"),
+            _buildContentContainer(context, MarkdownSection(data.dosage)),
+          ],
+
+          // Adverse Effects
+          if (data.adverse.isNotEmpty) ...[
+            _buildSectionHeader(context, "Adverse Effects"),
+            _buildContentContainer(context, MarkdownSection(data.adverse)),
+          ],
+
+          // Current Status
+          if (data.status.isNotEmpty) ...[
+            _buildSectionHeader(context, "Current Status"),
+            _buildContentContainer(context, MarkdownSection(data.status)),
+          ],
+
+          // References
+          _buildReferencesSection(context),
+
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}
+
+/* import "package:drfungus_prod/screens/datalist.dart";
+import "package:drfungus_prod/widgets/activetrials.dart";
+import "package:drfungus_prod/widgets/markdown_section.dart";
+import "package:flutter/material.dart";
 import "package:simple_rich_text/simple_rich_text.dart";
 
 class DrugDetailsScreen extends StatelessWidget {
@@ -254,3 +425,4 @@ Column(
     );
     */
 
+ */
