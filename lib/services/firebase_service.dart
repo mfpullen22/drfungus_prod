@@ -39,7 +39,34 @@ Future<List<Bug>> getBugs() async {
   return bugList;
 }
 
+// Replace your getDrugs() function temporarily with this debug version
+
 Future<List<Drug>> getDrugs() async {
+  final data = await FirebaseFirestore.instance
+      .collection("drugs")
+      .get(const GetOptions(source: Source.serverAndCache));
+  final List<Drug> drugList = [];
+
+  for (var doc in data.docs) {
+    final newDrug = Drug.fromMap(doc.data());
+    drugList.add(newDrug);
+  }
+
+  // Add suspension tag and sort alphabetically
+  for (var drug in drugList) {
+    drug.tag = drug.name.isNotEmpty ? drug.name[0].toUpperCase() : "#";
+  }
+
+  // Sort alphabetically by name (case-insensitive)
+  drugList.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+  // Apply suspension utilities for the alphabet navigation
+  SuspensionUtil.sortListBySuspensionTag(drugList);
+  SuspensionUtil.setShowSuspensionStatus(drugList);
+
+  return drugList;
+}
+/* Future<List<Drug>> getDrugs() async {
   final data = await FirebaseFirestore.instance
       .collection("drugs")
       .get(const GetOptions(source: Source.serverAndCache));
@@ -69,7 +96,7 @@ Future<List<Drug>> getDrugs() async {
   SuspensionUtil.setShowSuspensionStatus(drugList);
 
   return drugList;
-}
+} */
 
 Future<List<Mycoses>> getMycoses() async {
   final data = await FirebaseFirestore.instance

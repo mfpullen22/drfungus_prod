@@ -72,19 +72,31 @@ class MycosesDetailsScreen extends StatelessWidget {
         _buildContentContainer(
           context,
           Column(
-            children: data.references.map<Widget>((ref) {
+            children: data.references.asMap().entries.map<Widget>((entry) {
+              final index = entry.key;
+              final ref = entry.value;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 6,
-                      height: 6,
-                      margin: const EdgeInsets.only(top: 6, right: 8),
+                      width: 20,
+                      height: 20,
+                      margin: const EdgeInsets.only(top: 2, right: 8),
                       decoration: BoxDecoration(
                         color: Colors.red.shade600,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     Expanded(
