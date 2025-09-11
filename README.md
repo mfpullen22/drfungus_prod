@@ -1,5 +1,15 @@
 ![Dr. Fungus Logo](assets/images/logo.jpg)
 
+Dr. Fungus is the premier educational resource published by the Mycoses Study Group Education and Research Consortium.
+
+Within this app, which serves as a handy companion to the official website (https://drfungus.org - being revamped soon!), you will find all sorts of information on fungi, mycoses, and antifungal medictions.
+
+In addition, we publish a "Case of the Month" each month, helping clinicians and researchers learn more about interesting fungal diseases and presentations in a simulated consultation format. 
+
+If you have questions about this app, the content (including updates), or other queries, please don't hesitate to reach out to the developer (Matthew F. Pullen MD) at pullen@umn.edu.
+
+This app was developed by Dr. Matthew F. Pullen MD, with gracious help by Dr. Karen Stalin and student Fatima Donzo.
+
 **Terms & Conditions**  
 
 These terms and conditions apply to the Dr. Fungus app (hereby referred to as "Application") for mobile devices that was created by Matthew F. Pullen MD (hereby referred to as "Service Provider") as a Free service.
