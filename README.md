@@ -6,7 +6,7 @@ Within this app, which serves as a handy companion to the official website (http
 
 In addition, we publish a "Case of the Month" each month, helping clinicians and researchers learn more about interesting fungal diseases and presentations in a simulated consultation format. 
 
-If you have questions about this app, the content (including updates), or other queries, please don't hesitate to reach out to the developer (Matthew F. Pullen MD) at pullen@umn.edu.
+If you have questions about this app, the content (including updates), or other queries, please don't hesitate to reach out to the developer (Matthew F. Pullen MD - Editor-in-Chief of Dr. Fungus) at pullen@umn.edu.
 
 This app was developed by Dr. Matthew F. Pullen MD, with gracious help by Dr. Karen Stalin and student Fatima Donzo.
 
