@@ -1,6 +1,6 @@
 ![Dr. Fungus Logo](assets/images/logo.jpg)
 
-Dr. Fungus is the premier educational resource published by the Mycoses Study Group Education and Research Consortium.
+Dr. Fungus is the premier educational resource published by the Mycoses Study Group Education and Research Consortium (https://msgerc.org/).
 
 Within this app, which serves as a handy companion to the official website (https://drfungus.org - being revamped soon!), you will find all sorts of information on fungi, mycoses, and antifungal medictions.
 
