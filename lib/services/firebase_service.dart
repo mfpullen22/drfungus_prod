@@ -1,5 +1,6 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:drfungus_prod/models/bug.dart";
+import "package:drfungus_prod/models/case.dart";
 import "package:drfungus_prod/models/drug.dart";
 import "package:drfungus_prod/models/mycoses.dart";
 import "package:drfungus_prod/models/trial.dart";
@@ -66,6 +67,32 @@ Future<List<Drug>> getDrugs() async {
 
   return drugList;
 }
+
+Future<List<Case>> getCases() async {
+  try {
+    final data = await FirebaseFirestore.instance
+        .collection("cases")
+        .get(const GetOptions(source: Source.serverAndCache));
+
+    final List<Case> casesList = [];
+
+    for (var doc in data.docs) {
+      try {
+        final docData = doc.data();
+        final newCase = Case.fromMap(docData);
+        casesList.add(newCase);
+      } catch (e) {
+        // Continue with other documents
+        continue;
+      }
+    }
+
+    return casesList;
+  } catch (e) {
+    rethrow;
+  }
+}
+
 /* Future<List<Drug>> getDrugs() async {
   final data = await FirebaseFirestore.instance
       .collection("drugs")

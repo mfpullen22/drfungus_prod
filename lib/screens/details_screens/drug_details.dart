@@ -1,4 +1,3 @@
-import "package:drfungus_prod/screens/datalist.dart";
 import "package:drfungus_prod/widgets/activetrials.dart";
 import "package:drfungus_prod/widgets/markdown_section.dart";
 import "package:flutter/material.dart";

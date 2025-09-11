@@ -2,19 +2,19 @@
 import 'package:azlistview/azlistview.dart';
 
 class Bug with ISuspensionBean {
-  Bug(
-      {required this.name,
-      required this.name_lower,
-      required this.keywords,
-      required this.description,
-      required this.species,
-      required this.clinical,
-      required this.features,
-      required this.precautions,
-      required this.susceptibility,
-      required this.references,
-      required this.trials})
-      : tag = name[0].toUpperCase();
+  Bug({
+    required this.name,
+    required this.name_lower,
+    required this.keywords,
+    required this.description,
+    required this.species,
+    required this.clinical,
+    required this.features,
+    required this.precautions,
+    required this.susceptibility,
+    required this.references,
+    required this.trials,
+  }) : tag = name[0].toUpperCase();
 
   final String name;
   String tag;

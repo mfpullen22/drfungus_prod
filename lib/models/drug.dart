@@ -4,6 +4,7 @@ import 'package:azlistview/azlistview.dart';
 class Drug with ISuspensionBean {
   Drug({
     required this.name,
+    // ignore: non_constant_identifier_names
     required this.name_lower,
     required this.keywords,
     required this.mechanism,
@@ -19,6 +20,7 @@ class Drug with ISuspensionBean {
 
   final String name;
   String tag;
+  // ignore: non_constant_identifier_names
   final String name_lower;
   final List<dynamic> keywords;
   final String mechanism;
@@ -56,8 +58,6 @@ class Drug with ISuspensionBean {
         trials: _parseArrayField(map['trials']),
       );
     } catch (e) {
-      print('❌ Error parsing Drug from map: $e');
-      print('❌ Problematic map: $map');
       rethrow;
     }
   }
