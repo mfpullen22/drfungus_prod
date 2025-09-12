@@ -11,6 +11,7 @@ class Case {
   final String labs;
   final List<Map<String, String>> images;
   final List<Map<String, String>> questions;
+  final String discussion;
   final List<String> references;
 
   Case({
@@ -25,6 +26,7 @@ class Case {
     required this.labs,
     required this.images,
     required this.questions,
+    required this.discussion,
     required this.references,
   });
 
@@ -45,6 +47,7 @@ class Case {
       questions: List<Map<String, String>>.from(
         (map['questions'] ?? []).map((item) => Map<String, String>.from(item)),
       ),
+      discussion: map['discussion'] ?? '',
       references: List<String>.from(map['references'] ?? []),
     );
   }
@@ -62,6 +65,7 @@ class Case {
       'labs': labs,
       'images': images,
       'questions': questions,
+      'discussion': discussion,
       'references': references,
     };
   }

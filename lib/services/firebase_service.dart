@@ -13,34 +13,24 @@ Future<List<Bug>> getBugs() async {
   final List<Bug> bugList = [];
 
   for (var doc in data.docs) {
-    final newBug = Bug(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      description: doc["description"],
-      species: doc["species"],
-      clinical: doc["clinical"],
-      features: doc["features"],
-      precautions: doc["precautions"],
-      susceptibility: doc["susceptibility"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
+    final newBug = Bug.fromMap(doc.data());
     bugList.add(newBug);
   }
 
-  // Add suspension tag and sort
+  // Add suspension tag and sort alphabetically
   for (var bug in bugList) {
     bug.tag = bug.name.isNotEmpty ? bug.name[0].toUpperCase() : "#";
   }
 
+  // Sort alphabetically by name (case-insensitive)
+  bugList.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+  // Apply suspension utilities for the alphabet navigation
   SuspensionUtil.sortListBySuspensionTag(bugList);
   SuspensionUtil.setShowSuspensionStatus(bugList);
 
   return bugList;
 }
-
-// Replace your getDrugs() function temporarily with this debug version
 
 Future<List<Drug>> getDrugs() async {
   final data = await FirebaseFirestore.instance
@@ -68,6 +58,34 @@ Future<List<Drug>> getDrugs() async {
   return drugList;
 }
 
+Future<List<Mycoses>> getMycoses() async {
+  final data = await FirebaseFirestore.instance
+      .collection("mycoses")
+      .get(const GetOptions(source: Source.serverAndCache));
+  final List<Mycoses> mycosesList = [];
+
+  for (var doc in data.docs) {
+    final newMycoses = Mycoses.fromMap(doc.data());
+    mycosesList.add(newMycoses);
+  }
+
+  // Add suspension tag and sort alphabetically
+  for (var mycoses in mycosesList) {
+    mycoses.tag = mycoses.name.isNotEmpty ? mycoses.name[0].toUpperCase() : "#";
+  }
+
+  // Sort alphabetically by name (case-insensitive)
+  mycosesList.sort(
+    (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+  );
+
+  // Apply suspension utilities for the alphabet navigation
+  SuspensionUtil.sortListBySuspensionTag(mycosesList);
+  SuspensionUtil.setShowSuspensionStatus(mycosesList);
+
+  return mycosesList;
+}
+
 Future<List<Case>> getCases() async {
   try {
     final data = await FirebaseFirestore.instance
@@ -82,6 +100,7 @@ Future<List<Case>> getCases() async {
         final newCase = Case.fromMap(docData);
         casesList.add(newCase);
       } catch (e) {
+        print('Error processing case document ${doc.id}: $e');
         // Continue with other documents
         continue;
       }
@@ -89,73 +108,9 @@ Future<List<Case>> getCases() async {
 
     return casesList;
   } catch (e) {
+    print('Error fetching cases: $e');
     rethrow;
   }
-}
-
-/* Future<List<Drug>> getDrugs() async {
-  final data = await FirebaseFirestore.instance
-      .collection("drugs")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Drug> drugList = [];
-
-  for (var doc in data.docs) {
-    final newDrug = Drug(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      mechanism: doc["mechanism"],
-      susceptibility: doc["susceptibility"],
-      dosage: doc["dosage"],
-      adverse: doc["adverse"],
-      status: doc["status"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
-    drugList.add(newDrug);
-  }
-
-  for (var drug in drugList) {
-    drug.tag = drug.name.isNotEmpty ? drug.name[0].toUpperCase() : "#";
-  }
-
-  SuspensionUtil.sortListBySuspensionTag(drugList);
-  SuspensionUtil.setShowSuspensionStatus(drugList);
-
-  return drugList;
-} */
-
-Future<List<Mycoses>> getMycoses() async {
-  final data = await FirebaseFirestore.instance
-      .collection("mycoses")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Mycoses> mycosesList = [];
-
-  for (var doc in data.docs) {
-    final newMycoses = Mycoses(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      mycology: doc["mycology"],
-      epidemiology: doc["epidemiology"],
-      pathogenesis: doc["pathogenesis"],
-      clinical: doc["clinical"],
-      diagnosis: doc["diagnosis"],
-      treatment: doc["treatment"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
-    mycosesList.add(newMycoses);
-  }
-
-  for (var item in mycosesList) {
-    item.tag = item.name.isNotEmpty ? item.name[0].toUpperCase() : "#";
-  }
-
-  SuspensionUtil.sortListBySuspensionTag(mycosesList);
-  SuspensionUtil.setShowSuspensionStatus(mycosesList);
-
-  return mycosesList;
 }
 
 Future<List<Trial>> getTrials() async {
@@ -211,110 +166,3 @@ Future<List<Trial>> getActiveTrials(List<String> docIds) async {
 
   return trialsList;
 }
-
-/* Future<List<Bug>> getBugs() async {
-  final data = await FirebaseFirestore.instance
-      .collection("bugs")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Bug> bugList = [];
-
-  for (var doc in data.docs) {
-    final newBug = Bug(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      description: doc["description"],
-      species: doc["species"],
-      clinical: doc["clinical"],
-      features: doc["features"],
-      precautions: doc["precautions"],
-      susceptibility: doc["susceptibility"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
-    bugList.add(newBug);
-  }
-  bugList.sort((a, b) => a.name.compareTo(b.name));
-
-  return bugList.toList();
-}
-
-Future<List<Drug>> getDrugs() async {
-  final data = await FirebaseFirestore.instance
-      .collection("drugs")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Drug> drugList = [];
-
-  for (var doc in data.docs) {
-    final newDrug = Drug(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      mechanism: doc["mechanism"],
-      susceptibility: doc["susceptibility"],
-      dosage: doc["dosage"],
-      adverse: doc["adverse"],
-      status: doc["status"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
-    drugList.add(newDrug);
-  }
-
-  drugList.sort((a, b) => a.name.compareTo(b.name));
-
-  return drugList.toList();
-}
-
-Future<List<Mycoses>> getMycoses() async {
-  final data = await FirebaseFirestore.instance
-      .collection("mycoses")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Mycoses> mycosesList = [];
-
-  for (var doc in data.docs) {
-    final newMycoses = Mycoses(
-      name: doc["name"],
-      name_lower: doc["name_lower"],
-      keywords: doc["keywords"],
-      mycology: doc["mycology"],
-      epidemiology: doc["epidemiology"],
-      pathogenesis: doc["pathogenesis"],
-      clinical: doc["clinical"],
-      diagnosis: doc["diagnosis"],
-      treatment: doc["treatment"],
-      references: doc["references"],
-      trials: doc["trials"],
-    );
-    mycosesList.add(newMycoses);
-  }
-
-  mycosesList.sort((a, b) => a.name.compareTo(b.name));
-
-  return mycosesList.toList();
-} 
-
-Future<List<Trial>> getTrials() async {
-  final data = await FirebaseFirestore.instance
-      .collection("trials")
-      .get(const GetOptions(source: Source.serverAndCache));
-  final List<Trial> trialsList = [];
-
-  for (var doc in data.docs) {
-    final newTrial = Trial(
-      name: doc["name"],
-      organization: doc["organization"],
-      principal: doc["principal"],
-      description: doc["description"],
-      url: doc["url"],
-      email: doc["email"],
-    );
-    trialsList.add(newTrial);
-  }
-
-  trialsList.sort((a, b) => a.name.compareTo(b.name));
-
-  return trialsList.toList();
-}
-
-*/

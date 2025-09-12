@@ -1,4 +1,265 @@
-import 'package:drfungus_prod/widgets/activetrials.dart';
+// lib/screens/bug_details_screen.dart - Details page for bugs (fungi)
+import 'package:flutter/material.dart';
+import 'package:drfungus_prod/models/bug.dart';
+import 'package:drfungus_prod/widgets/markdown_section.dart';
+
+class BugDetailsScreen extends StatelessWidget {
+  final Bug bug;
+
+  const BugDetailsScreen({super.key, required this.bug});
+
+  Widget _buildSectionHeader(String title) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16, bottom: 8, left: 4, right: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.green.shade600, Colors.green.shade700],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.3),
+            offset: const Offset(0, 2),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.hub, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentContainer(Widget child) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.green.withOpacity(0.2), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, 1),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildLaboratoryFeaturesSection() {
+    // Check if any lab feature fields have content
+    bool hasMacro = bug.macro.isNotEmpty;
+    bool hasMicro = bug.micro.isNotEmpty;
+    bool hasHisto = bug.histo.isNotEmpty;
+
+    // If none have content, don't show the section
+    if (!hasMacro && !hasMicro && !hasHisto) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        _buildSectionHeader("Laboratory Features"),
+        _buildContentContainer(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Macroscopic Features
+              if (hasMacro) ...[
+                Text(
+                  'Macroscopic Features',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                MarkdownSection(bug.macro),
+                if (hasMicro || hasHisto) const SizedBox(height: 16),
+              ],
+
+              // Microscopic Features
+              if (hasMicro) ...[
+                Text(
+                  'Microscopic Features',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                MarkdownSection(bug.micro),
+                if (hasHisto) const SizedBox(height: 16),
+              ],
+
+              // Histopathologic Features
+              if (hasHisto) ...[
+                Text(
+                  'Histopathologic Features',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                MarkdownSection(bug.histo),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReferencesSection() {
+    if (bug.references.isEmpty ||
+        (bug.references.length == 1 && bug.references[0].isEmpty)) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        _buildSectionHeader("References"),
+        _buildContentContainer(
+          Column(
+            children: bug.references
+                .where((ref) => ref.isNotEmpty)
+                .toList()
+                .asMap()
+                .entries
+                .map<Widget>((entry) {
+                  final index = entry.key;
+                  final ref = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          margin: const EdgeInsets.only(top: 2, right: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade600,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            ref,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade700,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                })
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Return content with full white background container
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Description Section
+          if (bug.description.isNotEmpty) ...[
+            _buildSectionHeader("Description"),
+            _buildContentContainer(MarkdownSection(bug.description)),
+          ],
+
+          // Species Information Section
+          if (bug.species.isNotEmpty) ...[
+            _buildSectionHeader("Species Information"),
+            _buildContentContainer(MarkdownSection(bug.species)),
+          ],
+
+          // Clinical Information Section
+          if (bug.clinical.isNotEmpty) ...[
+            _buildSectionHeader("Clinical Information"),
+            _buildContentContainer(MarkdownSection(bug.clinical)),
+          ],
+
+          // Laboratory Features Section (custom layout)
+          _buildLaboratoryFeaturesSection(),
+
+          // Laboratory Precautions Section
+          if (bug.precautions.isNotEmpty) ...[
+            _buildSectionHeader("Laboratory Precautions"),
+            _buildContentContainer(MarkdownSection(bug.precautions)),
+          ],
+
+          // Susceptibility Information Section
+          if (bug.susceptibility.isNotEmpty) ...[
+            _buildSectionHeader("Susceptibility Information"),
+            _buildContentContainer(MarkdownSection(bug.susceptibility)),
+          ],
+
+          // References Section
+          _buildReferencesSection(),
+
+          // Bottom padding and spacer to ensure white background fills screen
+          const SizedBox(height: 16),
+
+          // This ensures the white background extends to fill remaining space
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: Container(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* import 'package:drfungus_prod/widgets/activetrials.dart';
 import 'package:drfungus_prod/widgets/markdown_section.dart';
 import 'package:flutter/material.dart';
 
@@ -188,7 +449,7 @@ class BugDetailsScreen extends StatelessWidget {
       ),
     );
   }
-}
+} */
 
 /* import 'package:drfungus_prod/widgets/activetrials.dart';
 import 'package:drfungus_prod/widgets/markdown_section.dart';

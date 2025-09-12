@@ -267,7 +267,7 @@ class _CasesListScreenState extends State<CasesListScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(widget.title ?? 'Educational Cases'),
+        title: Text(widget.title ?? 'Cases of the Month'),
         backgroundColor: Colors.purple.shade600,
         foregroundColor: Colors.white,
         elevation: 2,
