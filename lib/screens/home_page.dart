@@ -4,10 +4,21 @@ import "package:flutter/material.dart";
 import 'package:url_launcher/url_launcher.dart';
 
 void _launchURL(String url) async {
-  if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
-  } else {
-    throw 'Could not launch $url';
+  try {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode
+            .externalApplication, // This forces opening in external browser
+      );
+    } else {
+      // Fallback: try without checking canLaunchUrl first
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  } catch (e) {
+    print('Could not launch $url: $e');
+    // You might want to show a user-friendly error message here
   }
 }
 
